@@ -7,7 +7,7 @@ use Twilio\Rest\Client;
 require_once("update_acts.php");
 
 $account_sid = "AC0b08ce6c5e37783b65ea3fe52ce4b2bc";
-$auth_token = "d22efcdbe00b78c7818529038c22b1c3";
+$auth_token = "9568a33a6fbe1d15b226f9bedce4493c";
 // A Twilio number you own with SMS capabilities
 $twilio_number = "+16206589270";
 

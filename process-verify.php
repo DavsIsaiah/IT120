@@ -8,7 +8,7 @@ if (session_id() == "") {
 use Twilio\Rest\Client;
 
 $sid = "AC0b08ce6c5e37783b65ea3fe52ce4b2bc";
-$token = "d22efcdbe00b78c7818529038c22b1c3";
+$token = "9568a33a6fbe1d15b226f9bedce4493c";
 $serviceId = "VA6c339d8ce25a2d253a479963aa4215d5";
 
 $twilio = new Client($sid, $token);
