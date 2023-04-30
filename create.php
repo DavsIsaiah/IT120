@@ -1,5 +1,5 @@
 <?php
-require('./process-create.php');
+require_once('./process-create.php');
 if (session_id() == "") {
     session_start();
 }

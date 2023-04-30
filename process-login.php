@@ -24,6 +24,10 @@ if (isset($_POST['submit'])) {
             $_SESSION['pass'] = $pass;
             header("Location: Homepage.php");
         }
+        else if($row['user']==$user){
+            $alert = "Incorrect Password";
+
+        }
     }
 
     $alert = "Account Not Found";
