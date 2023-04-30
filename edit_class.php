@@ -432,12 +432,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Get the current day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
             $day_of_week = date('w');
 
-            // Calculate the date of the closest Monday
-            $monday_date = date('Y-m-d', strtotime('-' . ($day_of_week - 1) . ' days'));
+            if ($day_of_week == 0) {
+              $Current = Date('N');
+              $DaysToSunday = 7 - $Current;
+              $DaysFromMonday = $Current - 1;
+              $saturday_date = Date('Y-m-d', strtotime("+ {$DaysToSunday} Days"));
+              $monday_date = Date('Y-m-d', strtotime("- {$DaysFromMonday} Days"));
+            } else {
+              // Calculate the date of the closest Monday
+            
+              $monday_date = date('Y-m-d', strtotime('-' . ($day_of_week - 1) . ' days'));
 
-            // Calculate the date of the closest Saturday
-            $saturday_date = date('Y-m-d', strtotime('+' . (6 - $day_of_week) . ' days'));
-
+              // Calculate the date of the closest Saturday
+              $saturday_date = date('Y-m-d', strtotime('+' . (6 - $day_of_week) . ' days'));
+            }
             // Output the form input for schedule date
             echo '<div class="input-box">';
             echo '<label  for="schedule_date">Schedule Date:</label>';
