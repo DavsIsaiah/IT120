@@ -151,6 +151,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     header("Location: manage_class.php");
   } catch (Exception $e) {
     echo '<div style="background-color: #ff9999; padding: 10px; border: 1px solid #cc0000; margin-top: 10px; text-align: center;">Error: ' . $e->getMessage() . '</div>';
+    if (isset($_GET['id'])) {
+      $id = $_GET['id'];
+      $ref_table = "schedule";
+      $data = array();
+      // Retrieve the class schedules from the database
+      $fetch_data = $database->getReference($ref_table)
+        ->orderByChild('id')
+        ->equalTo((int) $id)
+        ->getValue();
+      foreach ($fetch_data as $key => $row) {
+        $data[$key] = $row;
+      }
+    } else {
+      die("No ID specified.");
+    }
   }
 }
 
