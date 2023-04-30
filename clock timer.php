@@ -417,13 +417,13 @@ if (!isset($_SESSION['user'])) {
 
               <div class="container-p col-md-6 col-lg-8 col-xl-5">
                 <div class="tabs">
-                  <button class="tablinks2 active" onclick="openPomoTimer(event, 'pomodoro', 25)" id="pomodoro-tab">
+                  <button class="tablinks2 active" onclick="openPomoTimer(event, 'pomodoro')" id="pomodoro-tab">
                     Pomodoro
                   </button>
-                  <button class="tablinks2" onclick="openPomoTimer(event, 'short-break', 5)" id="short-break-tab">
+                  <button class="tablinks2" onclick="openPomoTimer(event, 'short-break')" id="short-break-tab">
                     Short Break
                   </button>
-                  <button class="tablinks2" onclick="openPomoTimer(event, 'long-break', 15)" id="long-break-tab">
+                  <button class="tablinks2" onclick="openPomoTimer(event, 'long-break')" id="long-break-tab">
                     Long Break
                   </button>
                 </div>
@@ -431,22 +431,22 @@ if (!isset($_SESSION['user'])) {
                 <div id="pomodoro" class="tabcontent2 show">
                   <h2>Pomodoro Timer</h2>
                   <p class="countdown" id="pomodoro-timer">25:00</p>
-                  <button class="timer-pomo-start" onclick="startPomoTimer('pomodoro-timer', 25)">Start</button>
-                  <button class="timer-pomo-reset" onclick="resetPomoTimer('pomodoro-timer', 25)">Reset</button>
+                  <button class="timer-pomo-start" onclick="startPomoTimer('pomodoro-timer')">Start</button>
+                  <button class="timer-pomo-reset" onclick="resetPomoTimer('pomodoro-timer')">Reset</button>
                 </div>
                 
                 <div id="short-break" class="tabcontent2">
                   <h2>Short Break Timer</h2>
                   <p class="countdown" id="short-break-timer">5:00</p>
-                  <button class="timer-pomo-start" onclick="startPomoTimer('short-break-timer', 5)">Start</button>
-                  <button class="timer-pomo-reset" onclick="resetPomoTimer('short-break-timer', 5)">Reset</button>
+                  <button class="timer-pomo-start" onclick="startPomoTimer('short-break-timer')">Start</button>
+                  <button class="timer-pomo-reset" onclick="resetPomoTimer('short-break-timer')">Reset</button>
                 </div>
           
                 <div id="long-break" class="tabcontent2">
                   <h2>Long Break Timer</h2>
                   <p class="countdown" id="long-break-timer">15:00</p>
-                  <button class="timer-pomo-start" onclick="startPomoTimer('long-break-timer', 15)">Start</button>
-                  <button class="timer-pomo-reset" onclick="resetPomoTimer('long-break-timer', 15)">Reset</button>
+                  <button class="timer-pomo-start" onclick="startPomoTimer('long-break-timer')">Start</button>
+                  <button class="timer-pomo-reset" onclick="resetPomoTimer('long-break-timer')">Reset</button>
                 </div>
               </div>
 
@@ -458,12 +458,14 @@ if (!isset($_SESSION['user'])) {
 
 <script>
 
-var audio = new Audio('alarm-clock.mp3');
+var audio = new Audio('alarm.mp3');
 
 let timerInterval;
 let timeLeft;
 let stopwatchInterval;
 let stopwatchTime = 0;
+let isTimerRunning = false;
+
 
 function startTimer() {
   try {
@@ -486,7 +488,7 @@ function startTimer() {
     const startButton = document.getElementById('start-button');
     const resetButton = document.getElementById('reset-button');
 
-    if (startButton.textContent === 'Start') {
+    if (!isTimerRunning) {
       startButton.textContent = 'Stop';
       resetButton.disabled = true;
 
@@ -505,6 +507,8 @@ function startTimer() {
             stopTimer();
             audio.play();
             alert("Time's up!");
+            startButton.textContent = 'Start';
+            resetButton.disabled = false;
           } else {
             displayTime();
           }
@@ -515,6 +519,7 @@ function startTimer() {
       resetButton.disabled = false;
       stopTimer();
     }
+    isTimerRunning = !isTimerRunning; // toggle the timer state
   } catch (error) {
     alert(error.message);
   }
@@ -568,7 +573,12 @@ function startStopwatch() {
     startButtonSW.textContent = "Stop";
     resetButtonSW.disabled = true;
 
-    stopwatchStart = performance.now();
+    if (stopwatchStart === null) {
+      stopwatchStart = performance.now();
+    } else {
+      stopwatchStart += performance.now() - stopwatchPausedTime;
+    }
+
     stopwatchInterval = setInterval(() => {
       stopwatchTime = performance.now() - stopwatchStart;
       const minutes = Math.floor((stopwatchTime / 1000 / 60) % 60);
@@ -582,12 +592,14 @@ function startStopwatch() {
     startButtonSW.textContent = "Start";
     resetButtonSW.disabled = false;
     clearInterval(stopwatchInterval);
-    stopwatchTime += performance.now() - stopwatchStart;
+    stopwatchPausedTime = performance.now();
   }
 }
 
 function stopStopwatch() {
   clearInterval(stopwatchInterval);
+  stopwatchTime += performance.now() - stopwatchStart;
+  stopwatchStart = null;
 }
 
 function resetStopwatch() {
@@ -619,129 +631,184 @@ function openTab(evt, tabName) {
   evt.currentTarget.classList.add("active");
 }
 
+// POMODORO TIMER
+const timerDurations = {
+  "pomodoro-timer": 25 * 60,
+  "short-break-timer": 5 * 60,
+  "long-break-timer": 15 * 60
+};
 
-
-
-	let intervalId;
-		let remainingSeconds;
-		let currentCycle = 0;
-		const cycleList = ['pomodoro', 'short-break', 'pomodoro', 'long-break'];
-		
-    function startPomoTimer(id, minutes) {
-  const timer = document.getElementById(id);
-  const startButton = timer.nextElementSibling;
-  const resetButton = startButton.nextElementSibling;
-  remainingSeconds = minutes * 60;
-
-  startButton.innerHTML = 'Stop';
-  startButton.onclick = () => stopPomoTimer(startButton);
-
-  resetButton.disabled = true; // disable reset button when timer starts
-
-  // Disable the tabs when the countdown is running
-  const pomodoroTab = document.getElementById('pomodoro-tab');
-  const shortBreakTab = document.getElementById('short-break-tab');
-  const longBreakTab = document.getElementById('long-break-tab');
-
-  if (!intervalId) {
-    pomodoroTab.disabled = true;
-    shortBreakTab.disabled = true;
-    longBreakTab.disabled = true;
+function openPomoTimer(evt, timerName) {
+  var i, tabcontent2, tablinks2;
+  tabcontent2 = document.getElementsByClassName("tabcontent2");
+  for (i = 0; i < tabcontent2.length; i++) {
+    tabcontent2[i].style.display = "none";
   }
+  tablinks2 = document.getElementsByClassName("tablinks2");
+  for (i = 0; i < tablinks2.length; i++) {
+    tablinks2[i].className = tablinks2[i].className.replace(" active", "");
+  }
+  if (currentTimerId) {
+    resetPomoTimer(currentTimerId);
+  }
+  document.getElementById(timerName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
 
-  intervalId = setInterval(() => {
-    const remainingMinutes = Math.floor(remainingSeconds / 60);
-    const seconds = remainingSeconds % 60;
+let intervalId;
+let currentTimerId;
+let timeLeftPomo;
 
-    timer.innerHTML = `${remainingMinutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-
-    if (remainingSeconds === 0) {
-      clearInterval(intervalId);
-      audio.play();
-      alert('Timer finished!');
-      switchCycle();
-      resetButton.disabled = false; // re-enable reset button when timer stops
+function startPomoTimer(timerId) {
+  console.log("startPomoTimer called with timerId:", timerId);
+  
+  let startButton = document.querySelector(`#${timerId} ~ .timer-pomo-start`);
+  
+  if (startButton.textContent === "Stop") {
+    console.log("Stopping timer");
+    
+    clearInterval(intervalId);
+    intervalId = null;
+    
+    startButton.textContent = "Start";
+    
+    // enable all tabs
+    let tablinks2 = document.getElementsByClassName("tablinks2");
+    for (let i = 0; i < tablinks2.length; i++) {
+      tablinks2[i].disabled = false;
+      tablinks2[i].style.pointerEvents = "auto";
+      tablinks2[i].style.opacity = "1";
     }
-
-    remainingSeconds--;
+    
+    return;
+  }
+  
+  currentTimerId = timerId;
+  
+  if (!timeLeftPomo) {
+    timeLeftPomo = timerDurations[timerId];
+  }
+  
+  // disable all tabs
+  let tablinks2 = document.getElementsByClassName("tablinks2");
+  for (let i = 0; i < tablinks2.length; i++) {
+    tablinks2[i].disabled = true;
+    tablinks2[i].style.pointerEvents = "none";
+    tablinks2[i].style.opacity = "0.5";
+  }
+  
+  intervalId = setInterval(() => {
+    if (timeLeftPomo <= 0) {
+      console.log("Timer finished");
+      
+      clearInterval(intervalId);
+      intervalId = null;
+      
+      startButton.textContent = "Start";
+      
+      // enable all tabs
+      let tablinks2 = document.getElementsByClassName("tablinks2");
+      for (let i = 0; i < tablinks2.length; i++) {
+        tablinks2[i].disabled = false;
+        tablinks2[i].style.pointerEvents = "auto";
+        tablinks2[i].style.opacity = "1";
+      }
+      
+      let audio = new Audio("alarm.mp3");
+      audio.play();
+      
+      timeLeftPomo = null;
+      
+      cycleTimers(); // call cycleTimers function here
+      
+      return;
+    } else {
+      timeLeftPomo--;
+      let minutes = Math.floor(timeLeftPomo / 60);
+      let seconds = timeLeftPomo % 60;
+      document.getElementById(timerId).textContent =
+        minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0");
+    }
+    
+    startButton.textContent = "Stop";
+    
+    window.onbeforeunload = function() {
+      return "";
+    };
+    
+    window.onunload = function() {
+      clearInterval(intervalId);
+      intervalId = null;
+      
+      startButton.textContent = "Start";
+      
+      // enable all tabs
+      let tablinks2 = document.getElementsByClassName("tablinks2");
+      for (let i = 0; i < tablinks2.length; i++) {
+        if (!tablinks2[i].classList.contains("active")) {
+          tablinks2[i].disabled = false;
+          tablinks2[i].style.pointerEvents = "auto";
+          tablinks2[i].style.opacity = "1";
+        }
+      }
+    };
   }, 1000);
 }
 
-
-function stopPomoTimer(button) {
+function resetPomoTimer(timerId) {
   clearInterval(intervalId);
-  const timer = button.previousElementSibling;
-  const minutes = parseInt(timer.innerHTML.split(':')[0]);
-  const resetButton = button.nextElementSibling;
-  button.innerHTML = 'Start';
-  button.onclick = () => startPomoTimer(timer.id, minutes);
-  resetButton.disabled = false; // re-enable reset button when timer stops
-
-  // Re-enable the tabs when the countdown stops
-  const pomodoroTab = document.getElementById('pomodoro-tab');
-  const shortBreakTab = document.getElementById('short-break-tab');
-  const longBreakTab = document.getElementById('long-break-tab');
-
-  pomodoroTab.disabled = false;
-  shortBreakTab.disabled = false;
-  longBreakTab.disabled = false;
-}
-
-
-
-function resetPomoTimer(id, minutes) {
-  stopPomoTimer(document.getElementById(id).nextElementSibling);
-  remainingSeconds = minutes * 60;
-  document.getElementById(id).innerHTML = `${minutes}:00`;
-  document.getElementById(id).nextElementSibling.innerHTML = 'Start';
-  document.getElementById(id).nextElementSibling.onclick = () => startPomoTimer(id, minutes);
-}
-		
-function openPomoTimer(event, timerType, minutes) {
-  const tabcontent2s = document.getElementsByClassName('tabcontent2');
-  for (let i = 0; i < tabcontent2s.length; i++) {
-    tabcontent2s[i].classList.remove('show');
-  }
-
-  const tablinks2 = document.getElementsByClassName('tablinks2');
+  intervalId = null;
+  
+  timeLeftPomo = timerDurations[timerId]; // reset timeLeftPomo
+  
+  let minutes = Math.floor(timeLeftPomo / 60);
+  let seconds = timeLeftPomo % 60;
+  
+  document.getElementById(timerId).textContent =
+    minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0");
+  
+  let startButton = document.querySelector(`#${timerId} ~ .timer-pomo-start`);
+  
+  startButton.textContent = "Start";
+  
+  let tablinks2 = document.getElementsByClassName("tablinks2");
+  
   for (let i = 0; i < tablinks2.length; i++) {
-    tablinks2[i].classList.remove('active');
-  }
-
-  document.getElementById(timerType).classList.add('show');
-  event.currentTarget.classList.add('active');
-
-  if (timerType === 'pomodoro') {
-    currentCycle = 0;
-  } else if (timerType === 'short-break') {
-    currentCycle = 1;
-  } else {
-    currentCycle = 3;
+    tablinks2[i].disabled = false;
+    tablinks2[i].style.pointerEvents = "auto";
+    tablinks2[i].style.opacity = "1";
   }
 }
-		
-		function switchCycle() {
-		currentCycle = (currentCycle + 1) % cycleList.length;
-		const nextTimerType = cycleList[currentCycle];
-		const nextTimerMinutes = (nextTimerType === 'pomodoro') ? 25 : ((nextTimerType === 'short-break') ? 5 : 15);
-		const nextTimerId = `${nextTimerType}-timer`;
 
-		const tablinks2 = document.getElementsByClassName('tablinks2');
-		for (let i = 0; i < tablinks2.length; i++) {
-			tablinks2[i].classList.remove('active');
-		}
+const timerOrder = ["pomodoro-timer", "short-break-timer", "pomodoro-timer", "long-break-timer"];
+let currentCycle = 0;
 
-		// hide previous timer
-		const previousTimerType = cycleList[(currentCycle + cycleList.length - 1) % cycleList.length];
-		document.getElementById(previousTimerType).classList.remove('show');
+function cycleTimers() {
+  currentCycle = (currentCycle + 1) % timerOrder.length;
+  let nextTimerId = timerOrder[currentCycle];
+  let nextTabId = nextTimerId.split("-").slice(0, -1).join("-");
 
-		// show new timer
-		document.getElementById(nextTimerType).classList.add('show');
-		document.getElementById(nextTimerId).innerHTML = `${nextTimerMinutes}:00`;
-		document.querySelector(`button[onclick="openPomoTimer(event, '${nextTimerType}', ${nextTimerMinutes})"]`).classList.add('active');
+  // remove active class from all tabs
+  let tablinks2 = document.getElementsByClassName("tablinks2");
+  for (let i = 0; i < tablinks2.length; i++) {
+    tablinks2[i].classList.remove("active");
+  }
 
-		startPomoTimer(nextTimerId, nextTimerMinutes);
-		}
+  // hide previous timer
+  let previousTimerId = timerOrder[(currentCycle + timerOrder.length - 1) % timerOrder.length];
+  let previousTabId = previousTimerId.split("-").slice(0, -1).join("-");
+  document.getElementById(previousTabId).classList.remove("show");
+
+  // show new timer
+  document.getElementById(nextTabId).classList.add("show");
+  document.querySelector(`#${nextTabId}-tab`).classList.add("active");
+
+  openPomoTimer({ currentTarget: document.getElementById(nextTabId + "-tab") }, nextTabId);
+  startPomoTimer(nextTimerId);
+}
+
+
+
 
     </script>
 </body>
