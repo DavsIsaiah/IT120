@@ -35,7 +35,10 @@ if (isset($_POST['submit'])) {
                 $err = "Mobile number is already registered.";
             }
         }
-
+        $pattern = " ";
+        if (strpos($pass, $pattern) === true) {
+            $err = "Password must not contain whitespaces.";
+        }
 
         
         if($err == ""){
@@ -43,7 +46,7 @@ if (isset($_POST['submit'])) {
             //edit the user value in schedule
             $get_data = $database->getReference('schedule')->orderByChild('user')->equalTo($_SESSION['user'])->getValue();
             foreach($get_data as $key2=>$row2){
-                $database->getReference("schedule/$key2/user")->update($user);
+                $database->getReference("schedule/$key2/user")->set($user);
             }
             //edits the value in the database
             $ref_table = "cred/".$_SESSION['key'];
