@@ -333,6 +333,8 @@ if (!isset($_SESSION['user'])) {
                                                         <?php
                                                     }
                                                 }
+                                            } else {
+                                                echo "<li class='list-group-item d-flex justify-content-between align-items-center'>No Subtasks For the projects</li>";
                                             }
                                             ?>
                                         </ul>
