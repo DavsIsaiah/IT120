@@ -10,7 +10,7 @@ if (!isset($_SESSION['user'])) {
 }
 require __DIR__ . '/vendor/autoload.php';
 include('connection.php');
-require('process-editproj.php');
+require_once('process-editproj.php');
 if (isset($_GET['key']))
   $_SESSION['act_key'] = $_GET['key'];
 ?>

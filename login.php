@@ -1,5 +1,5 @@
 <?php
-require('./process-login.php');
+require_once('./process-login.php');
 if (session_id() == "") {
     session_start();
 }

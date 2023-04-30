@@ -1,5 +1,5 @@
 <?php
-require('./process-onboard.php');
+require_once('./process-onboard.php');
 if (session_id() == "") {
 	session_start();
 }

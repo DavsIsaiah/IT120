@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       ->getValue();
     if ($fetch_data > 0) {
       foreach ($fetch_data as $key => $row) {
-        if ($row['course_code'] == $course_code && $_SESSION['user'] == $row['user']) {
+        if ($_SESSION['user'] == $row['user']) {
           throw new Exception("The course title already exists with a different course code. Please try again.");
         }
 
@@ -83,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       ->getValue();
     if ($fetch_data > 0) {
       foreach ($fetch_data as $key => $row) {
-        if ($row['course_title'] == $course_title && $_SESSION['user'] == $row['user']) {
+        if ($_SESSION['user'] == $row['user']) {
           throw new Exception("Course code already exists with a different course title. Please try again with a different course code.");
         }
 

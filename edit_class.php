@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       ->getValue();
     if ($fetch_data > 0) {
       foreach ($fetch_data as $key => $row) {
-        if ($row['course_code'] == $course_code && $_SESSION['user'] == $row['user']) {
+        if ($_SESSION['user'] == $row['user']) {
           if ($keys == $key) {
             continue;
           }
@@ -103,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       ->getValue();
     if ($fetch_data > 0) {
       foreach ($fetch_data as $key => $row) {
-        if ($row['course_title'] == $course_title && $_SESSION['user'] == $row['user']) {
+        if ($_SESSION['user'] == $row['user']) {
           if ($keys == $key) {
             continue;
           } else
