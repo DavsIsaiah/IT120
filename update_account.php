@@ -100,7 +100,7 @@ require('process-update.php');
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="clock timer.html">
+              <a class="nav-link" href="clock timer.php">
                 <i class="fas fa-clock me-2"></i>
                 <span class="linklabel">Clock</span>
               </a>
@@ -144,7 +144,7 @@ require('process-update.php');
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="clock timer.html">
+              <a class="nav-link" href="clock timer.php">
                 <i class="fas fa-clock me-2"></i><span class="linklabel">Clock</span>
               </a>
             </li>
