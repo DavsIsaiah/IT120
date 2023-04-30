@@ -29,10 +29,10 @@ if (isset($_POST['submit'])) {
     $_SESSION['pass_reg'] = $pass;
 
     //Verification
-    $pattern = " ";
-    if (strpos($pass, $pattern) === true) {
+    if (strpos($pass, ' ') !== false) {
+        // Space found.
         $err = "Password must not contain whitespaces.";
-    }
+      }
     //Checking if phone number is correct variation
     if (preg_match('/^[0-9]{10}+$/', $phone)) {
         foreach($fetch_data as $key => $row){

@@ -1,6 +1,6 @@
 <?php
 if (session_id() == "") {
-	session_start();
+    session_start();
 }
 require __DIR__ . '/vendor/autoload.php';
 include('connection.php');
@@ -13,7 +13,7 @@ if (isset($_POST['submit'])) {
 
     $getdata = $database->getReference($ref_table)->getChild($_SESSION['key'])->getValue();
 
-    if($getdata > 0){
+    if ($getdata > 0) {
         $updateData = [
             'mobile' => $phone,
             'user' => $user,
@@ -21,44 +21,45 @@ if (isset($_POST['submit'])) {
         ]; //this is the schema
         $ref_table = 'cred';
         $fetch_data = $database->getReference($ref_table)->getValue();
-        foreach($fetch_data as $key => $row){
+        foreach ($fetch_data as $key => $row) {
             //check if username is not in the database;
-            if($key == $_SESSION['key']){
+            if ($key == $_SESSION['key']) {
                 continue;
             }
 
-            if($row['user']==$user){
+            if ($row['user'] == $user) {
                 $err = "Username is already registered.";
             }
             //Check if phone number is not in the database
-            if($row['mobile'] == $phone){
+            if ($row['mobile'] == $phone) {
                 $err = "Mobile number is already registered.";
             }
         }
-        $pattern = " ";
-        if (strpos($pass, $pattern) === true) {
+        if (strpos($pass, ' ') !== false) {
+            // Space found.
             $err = "Password must not contain whitespaces.";
         }
 
-        
-        if($err == ""){
+
+        if ($err == "") {
 
             //edit the user value in schedule
             $get_data = $database->getReference('schedule')->orderByChild('user')->equalTo($_SESSION['user'])->getValue();
-            foreach($get_data as $key2=>$row2){
+            foreach ($get_data as $key2 => $row2) {
                 $database->getReference("schedule/$key2/user")->set($user);
             }
             //edits the value in the database
-            $ref_table = "cred/".$_SESSION['key'];
+            $ref_table = "cred/" . $_SESSION['key'];
             $database->getReference($ref_table)->update($updateData);
             $_SESSION['user'] = $user;
             $_SESSION['pass'] = $pass;
-            $_SESSION['mobile'] = $mobile;
-            header("Location: Homepage.php");
-        }else{
+            $_SESSION['mobile'] = $phone;
+            echo '<script>window.location = "Homepage.php";
+    </script>';
+        } else {
             echo "<script>alert('$err');</script>";
         }
-    }else{
+    } else {
         echo "Something went wrong";
     }
 
