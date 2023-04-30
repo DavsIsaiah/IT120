@@ -207,9 +207,8 @@ if (!isset($_SESSION['user'])) {
                 include('connection.php');
                 $ref_table = "act";
                 $fetch_data = $database->getReference($ref_table)->getValue();
-                if($fetch_data < 1){
-                    echo "<h3>No Saved Projects</h3>";
-                }
+                if($fetch_data > 0){
+                    
                 foreach ($fetch_data as $key => $row) {
                     //only post the activities with the same user key! 
                     if ($row['user'] == $_SESSION['key']) {
@@ -344,6 +343,9 @@ if (!isset($_SESSION['user'])) {
                     }
 
 
+                }}
+                else{
+                    echo "<h3>No Saved Projects</h3>";
                 } ?>
 
             </main>
