@@ -205,148 +205,153 @@ if (!isset($_SESSION['user'])) {
                 //retrieve the collection for the specific key
                 require __DIR__ . '/vendor/autoload.php';
                 include('connection.php');
+                $count = 0;
                 $ref_table = "act";
                 $fetch_data = $database->getReference($ref_table)->getValue();
-                if($fetch_data > 0){
-                    
-                foreach ($fetch_data as $key => $row) {
-                    //only post the activities with the same user key! 
-                    if ($row['user'] == $_SESSION['key']) {
-                        ?>
-                        <div class="rounded p-3 mb-4 pinkbgcolor">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">
-                                    <?php
-                                    echo $row['Title'];
-                                    ?>
-                                </h5>
-                                <span class="badge statustext rounded-pill <?php
-                                if ($row['Status'] == "Past Deadline")
-                                    echo "bg-danger";
-                                if ($row['Status'] == "In progress")
-                                    echo "bg-secondary";
-                                if ($row['Status'] == "Finished")
-                                    echo "bg-success";
-                                if ($row['Status'] == "On Hold")
-                                    echo "bg-secondary";
-                                ?>">
-                                    <?php
-                                    echo $row['Status'];
-                                    ?>
-                                </span>
-                            </div>
-                            <div>
-                                <span class="badge secondarypinkbgcolor projectcat rounded">
-                                    <?php
-                                    echo $row['Category'];
-                                    ?>
-                                </span>
-                                <a href="editproj.php?key=<?php
-                                echo $key;
-                                ?>" class="text-decoration-none ms-3">
-                                    <i class="fa-regular fa-pen-to-square fas"></i>
-                                </a>
-                                <a href="deleteproj.php?key=<?php
-                                echo $key;
-                                ?>" class="text-decoration-none ms-3 delete">
-                                    <i class="fa-regular fa-trash fas"></i>
-                                </a>
-                            </div>
-                            <p class="mb-2 mt-1">Project Deadline:
-                                <?php
-                                echo $row['deadline'];
-                                ?>
-                            </p>
-                            <button class="btn btn-outline-dark btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#<?php
-                            echo $key;
-                            ?>" aria-expanded="false" aria-controls="<?php
-                            echo $key;
-                            ?>" id="view-tasks-btn-1">
-                                View Tasks
-                            </button>
-                            <div class="collapse mt-3" id="<?php
-                            echo $key;
-                            ?>" data-bs-parent=".rounded">
+                if ($fetch_data > 0) {
+                    foreach ($fetch_data as $key => $row) {
+                        //only post the activities with the same user key! 
+                        if ($row['user'] == $_SESSION['key']) {
+                            $count = $count + 1;
+                            ?>
+                            <div class="rounded p-3 mb-4 pinkbgcolor">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h6 class="mb-0">Subtasks</h6>
-                                    <button class="btn btn-outline-dark btn-sm mb-2" type="button" data-bs-toggle="modal"
-                                        data-bs-target="#create-<?php
+                                    <h5 class="mb-0">
+                                        <?php
+                                        echo $row['Title'];
+                                        ?>
+                                    </h5>
+                                    <span class="badge statustext rounded-pill <?php
+                                    if ($row['Status'] == "Past Deadline")
+                                        echo "bg-danger";
+                                    if ($row['Status'] == "In progress")
+                                        echo "bg-secondary";
+                                    if ($row['Status'] == "Finished")
+                                        echo "bg-success";
+                                    if ($row['Status'] == "On Hold")
+                                        echo "bg-secondary";
+                                    ?>">
+                                        <?php
+                                        echo $row['Status'];
+                                        ?>
+                                    </span>
+                                </div>
+                                <div>
+                                    <span class="badge secondarypinkbgcolor projectcat rounded">
+                                        <?php
+                                        echo $row['Category'];
+                                        ?>
+                                    </span>
+                                    <a href="editproj.php?key=<?php
+                                    echo $key;
+                                    ?>" class="text-decoration-none ms-3">
+                                        <i class="fa-regular fa-pen-to-square fas"></i>
+                                    </a>
+                                    <a href="deleteproj.php?key=<?php
+                                    echo $key;
+                                    ?>" class="text-decoration-none ms-3 delete">
+                                        <i class="fa-regular fa-trash fas"></i>
+                                    </a>
+                                </div>
+                                <p class="mb-2 mt-1">Project Deadline:
+                                    <?php
+                                    echo $row['deadline'];
+                                    ?>
+                                </p>
+                                <button class="btn btn-outline-dark btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#<?php
+                                echo $key;
+                                ?>" aria-expanded="false" aria-controls="<?php
+                                echo $key;
+                                ?>" id="view-tasks-btn-1">
+                                    View Tasks
+                                </button>
+                                <div class="collapse mt-3" id="<?php
+                                echo $key;
+                                ?>" data-bs-parent=".rounded">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">Subtasks</h6>
+                                        <button class="btn btn-outline-dark btn-sm mb-2" type="button" data-bs-toggle="modal"
+                                            data-bs-target="#create-<?php
+                                            echo $key;
+                                            ?>">
+                                            Create Subtask <i class="bi bi-plus-circle"></i>
+                                        </button>
+                                        <!--POPUP START-->
+                                        <div class="modal fade" id="create-<?php
                                         echo $key;
-                                        ?>">
-                                        Create Subtask <i class="bi bi-plus-circle"></i>
-                                    </button>
-                                    <!--POPUP START-->
-                                    <div class="modal fade" id="create-<?php
-                                    echo $key;
-                                    ?>" tabindex="-1" aria-labelledby="create-<?php
-                                    echo $key;
-                                    ?>" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="create-subtask-modal-label">Create Subtask</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                                </div>
-                                                <form action="process-subtask.php" method="POST">
-                                                    <div class="modal-body">
-                                                        <div class="mb-3">
-                                                            <label for="subtask-name" class="form-label">Subtask Name</label>
-                                                            <input type="text" class="form-control" id="subtask-name"
-                                                                name="subtask-name" required>
-                                                            <input type="text" class="form-control" id="task_id" name="task_id"
-                                                                value="<?php echo $key; ?>" required hidden>
+                                        ?>" tabindex="-1" aria-labelledby="create-<?php
+                                        echo $key;
+                                        ?>" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="create-subtask-modal-label">Create Subtask</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                    </div>
+                                                    <form action="process-subtask.php" method="POST">
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <label for="subtask-name" class="form-label">Subtask Name</label>
+                                                                <input type="text" class="form-control" id="subtask-name"
+                                                                    name="subtask-name" required>
+                                                                <input type="text" class="form-control" id="task_id" name="task_id"
+                                                                    value="<?php echo $key; ?>" required hidden>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Cancel</button>
-                                                        <button type="submit" class="btn buttonbg">Create</button>
-                                                    </div>
-                                                </form>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn buttonbg">Create</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
+                                        <!--POPUP END-->
                                     </div>
-                                    <!--POPUP END-->
-                                </div>
-                                <div class="card card-body">
-                                    <ul class="list-group">
-                                        <?php
-                                        if (is_array($row['Subtasks'])) {
-                                            foreach ($row['Subtasks'] as $key2 => $sub) {
-                                                if ($sub == "") {
-                                                } else {
-                                                    ?>
-                                                    <li
-                                                        class="list-group-item d-flex justify-content-between align-items-center <?php echo ($sub['status'] == "finished") ? "finished" : "" ?>">
-                                                        <?php
-                                                        echo $sub['name'];
+                                    <div class="card card-body">
+                                        <ul class="list-group">
+                                            <?php
+                                            if (is_array($row['Subtasks'])) {
+                                                foreach ($row['Subtasks'] as $key2 => $sub) {
+                                                    if ($sub == "") {
+                                                    } else {
                                                         ?>
-                                                        <button id=<?php echo $key . '.' . $key2; ?>
-                                                            class="btn <?php echo ($sub['status'] == "finished") ? "btn-secondary" : "btn-success" ?> btn-sm"
-                                                            onClick="toggleTaskStatus(this);">
-                                                            <i
-                                                                class="bi <?php echo ($sub['status'] == "finished") ? "bi-arrow-clockwise" : "bi-check" ?>"></i>
-                                                        </button>
-                                                    </li>
-                                                    <?php
+                                                        <li
+                                                            class="list-group-item d-flex justify-content-between align-items-center <?php echo ($sub['status'] == "finished") ? "finished" : "" ?>">
+                                                            <?php
+                                                            echo $sub['name'];
+                                                            ?>
+                                                            <button id=<?php echo $key . '.' . $key2; ?>
+                                                                class="btn <?php echo ($sub['status'] == "finished") ? "btn-secondary" : "btn-success" ?> btn-sm"
+                                                                onClick="toggleTaskStatus(this);">
+                                                                <i
+                                                                    class="bi <?php echo ($sub['status'] == "finished") ? "bi-arrow-clockwise" : "bi-check" ?>"></i>
+                                                            </button>
+                                                        </li>
+                                                        <?php
+                                                    }
                                                 }
                                             }
-                                        }
-                                        ?>
-                                    </ul>
+                                            ?>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <!--END OF SINGLE PROJECT INSTANCE-->
-                        <?php
+                            <!--END OF SINGLE PROJECT INSTANCE-->
+                            <?php
+                        }
+
+
                     }
-
-
-                }}
-                else{
+                } else {
                     echo "<h3>No Saved Projects</h3>";
-                } ?>
+                }
+                if ($count == 0) {
+                    echo "<h3>No Saved Projects</h3>";
+                }
+                ?>
 
             </main>
         </div>
