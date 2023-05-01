@@ -34,7 +34,6 @@ foreach ($fetch_data as $key => $row) {
         //send the message to twilio
         $client = new Client($account_sid, $auth_token);
         $phone = "+63" . $row['mobile'];
-        echo $phone;
         $client->messages->create(
             // Where to send a text message (your cell phone?)
             //Phone number of the user
